@@ -1,0 +1,661 @@
+{
+    "name": "Pon de tu parte API",
+    "description": "#pondetuparte",
+    "protocol": "rest",
+    "basePath": "http://www.pondetuparte.com",
+    "publicPath": "/api/v2",
+    "headers": {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+    },
+    "resources": {
+        "Authentication": {
+            "methods": {
+                "login": {
+                    "name": "login",
+                    "path": "/auth/login",
+                    "httpMethod": "POST",
+                    "description": "Permite identificar al usuario en PDTP, retornando sus datos y el token respectivo",
+                    "parameters": {
+                        "username": {
+                            "type": "string",
+                            "required": true,
+                            "default": "",
+                            "description": "Nombre de usuario, es el correo con el que se ha registrado",
+                            "location":"body"
+                        },
+                        "password" : {
+                            "type" : "string",
+                            "required" : true,
+                            "description" : "Contraseña del usuario",
+                            "location":"body"
+                        }
+                    }
+                },
+                "facebookAuth": {
+                    "name": "facebookAuth",
+                    "path": "/auth/facebookAuth",
+                    "httpMethod": "POST",
+                    "description": "Permite loguearse con Facebook y obtener los datos de la cuenta social. Si el usuario no está registrado, se registrará en la aplicación autovalidando el correo, si necesidad de su comprobación. Si el usuario ya está registrado, se asociará la cuenta estableciendo la propiedad FID del usuario.",
+                    "parameters": {
+                        "accessToken": {
+                            "type": "string",
+                            "required": true,
+                            "default": "CAAD4xXcZBqFsBAIc9VWAQ4ERiCY9vEEPXpblLfEXP6mOXtbqp1vrBMsxzngd0nQxfbZAStK5TsFL2Ty2fkEN6TgZBUTI3gH5R0TkTnoF1A3QZCZCvK6tjtQsaYLwpnqK5cggqOfSf607HPgN5ZCXk0fDlu6b7k7jEj2MGOYaoj1WxTWtIjfcMmjpjNDxrkFIrkZCZARxAjzuZCuy8u7cxcnUi",
+                            "description": "El accessToken que dispone Facebook una vez que el usuario concede los permisos de acceso a la aplicación",
+                            "location":"body"
+                        }
+                    }
+                },
+                "signup" :{
+                    "name" : "signup",
+                    "path" : "/auth/signup",
+                    "httpMethod" : "POST",
+                    "description" : "Permite crear un nuevo usuario, luego se enviará un correo de confirmación para validar el email (su usuario) registrado.",
+                    "parameters" : {
+                        "user" : {
+                            "type" : "object",
+                            "description" : "Un objeto usuario que contiene las propiedades del mismo, los valores de pais , departamento e institucion se refieren al id respectivo de estas entidades",
+                            "location" : "body",
+                            "properties" : {
+                                "username" : {
+                                    "title": "username",
+                                    "required":true,
+                                    "type":"string",
+                                    "description": "Usuario",
+                                    "default": "test"
+                                },
+                                "password" : {
+                                    "title": "password",
+                                    "required":true,
+                                    "type":"string",
+                                    "description": "Contraseña",
+                                    "default": "test"
+                                },
+                                "nombres" : {
+                                    "title": "nombres",
+                                    "required":true,
+                                    "type":"string",
+                                    "description": "Nombres de usuario",
+                                    "default": "test"
+                                },
+                                "pais" : {
+                                    "title": "pais",
+                                    "required":true,
+                                    "type":"number",
+                                    "description": "ID de pais",
+                                    "default": 1
+                                },
+                                "departamento" : {
+                                    "title": "departamento",
+                                    "required":false,
+                                    "type":"number",
+                                    "description": "Id de departamento",
+                                    "default": 1
+                                },
+                                "institucion" : {
+                                    "title": "institucion",
+                                    "required":false,
+                                    "type":"number",
+                                    "description": "Id de institucion",
+                                    "default": ""
+                                },
+                                "fid" : {
+                                    "title": "Facebook id de usuario",
+                                    "required": false,
+                                    "type":"number",
+                                    "description": "Facebook id de usuario",
+                                    "default": ""
+                                },
+                                "edad" : {
+                                    "title": "edad",
+                                    "required":false,
+                                    "type":"number",
+                                    "description": "Edad de usuario",
+                                    "default": "22"
+                                },
+                                "sexo" : {
+                                    "title": "sexo",
+                                    "required":false,
+                                    "type":"string",
+                                    "description": "Sexo de usuario, M o F",
+                                    "default": "M"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "Timeline": {
+            "methods": {
+                "list": {
+                    "name": "list",
+                    "path": "/activities/list",
+                    "httpMethod": "GET",
+                    "description": "Permite retornar la actividad realizada en PDTP, se retornan compromisos realizados como fotos de compromisos publicados.",
+                    "parameters": {
+                        "Authorization": {
+                            "required": "Y",
+                            "default": "Bearer ",
+                            "type": "string",
+                            "description": "Token que debe ir en los headers el formato es 'Bearer [token sin los corchetes]' ",
+                            "location": "header"
+                        },
+                        "page": {
+                            "type": "number",
+                            "required": true,
+                            "default": "1",
+                            "description": "Número de página de actividades",
+                            "location":"path"
+                        },
+                        "quantity" : {
+                            "type" : "number",
+                            "required" : true,
+                            "description" : "Cantidad de actividades por página, no modificable cuando se usa time y dir",
+                            "location":"path",
+                            "default" : "10"
+                        },
+                        "time" : {
+                            "type" : "string",
+                            "required" : false,
+                            "description" : "Fecha y hora sobre la cual se quieren obtener actividades, debe ser GMT -0000 en el formato YYYY-MM-D HH:mm:ss.SSS",
+                            "location": "path",
+                            "default" : "2014-11-11 11:11:11.111"
+                        },
+                        "dir" : {
+                            "type" : "number",
+                            "required" : false,
+                            "description" : "Sentido en el tiempo para el cual se quieren retornar actividades. 0 para obtener actividades después de {{time}} y 1 para obtener actividades antes de {{time}}",
+                            "location":"body",
+                            "default": "1"
+                        }
+
+                    }
+                }
+            }
+        },
+        "Commitment Categories": {
+            "methods": {
+                "listCommitmentCategories" : {
+                    "name": "list commitment categories",
+                    "path" : "/commitments/categories",
+                    "httpMethod" : "GET",
+                    "description" : "Permite retornar la lista de categories de compromisos",
+                    "parameters" : {
+                        "Authorization": {
+                            "required": "Y",
+                            "default": "Bearer ",
+                            "type": "string",
+                            "description": "Token que debe ir en los headers el formato es 'Bearer [token sin los corchetes]' ",
+                            "location": "header"
+                        }
+                    }
+                },
+                "readCommitmentCategory" : {
+                    "name" : "get commitment category",
+                    "path" : "/commitments/categories/{id}",
+                    "httpMethod" : "GET",
+                    "description" : "Permite retornar una categoría de compromisos",
+                    "parameters" : {
+                        "Authorization": {
+                            "required": "Y",
+                            "default": "Bearer ",
+                            "type": "string",
+                            "description": "Token que debe ir en los headers el formato es 'Bearer [token sin los corchetes]' ",
+                            "location": "header"
+                        },
+                        "id" : {
+                            "title" : "id",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id de la categoría del compromiso",
+                            "location" : "path"
+                        }
+                    }
+                }
+            }
+        },
+        "Commitments": {
+            "methods": {
+                "listCommitments" : {
+                    "name": "list commitment",
+                    "path" : "/commitments/list",
+                    "httpMethod" : "GET",
+                    "description" : "Permite listar los compromisos, en forma general o por categoría",
+                    "parameters" : {
+                        "Authorization": {
+                            "required": "Y",
+                            "default": "Bearer ",
+                            "type": "string",
+                            "description": "Token que debe ir en los headers el formato es 'Bearer [token sin los corchetes]' ",
+                            "location": "header"
+                        },
+                        "categoryId" : {
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "string",
+                            "description" : "Id de la categoría del compromiso",
+                            "required" : false,
+                            "location" : "path"
+                        }
+                    }
+                },
+                "topCommitments" : {
+                    "name" : "top commitments",
+                    "path" : "/commitments/top",
+                    "httpMethod" : "GET",
+                    "description" : "Permite retornar el top five de compromisos",
+                    "parameters" : {
+                        "Authorization": {
+                            "required": "Y",
+                            "default": "Bearer ",
+                            "type": "string",
+                            "description": "Token que debe ir en los headers el formato es 'Bearer [token sin los corchetes]' ",
+                            "location": "header"
+                        }
+                    }
+                }
+            }
+        },
+        "User" : {
+            "methods" : {
+                "readUser" : {
+                    "name" : "get user by id",
+                    "path" : "/users/{id}",
+                    "httpMethod" : "GET",
+                    "description" : "Permite listar los compromisos de un usuario",
+                    "parameters" : {
+                        "Authorization": {
+                            "required": "Y",
+                            "default": "Bearer ",
+                            "type": "string",
+                            "description": "Token que debe ir en los headers el formato es 'Bearer [token sin los corchetes]' ",
+                            "location": "header"
+                        },
+                        "id" : {
+                            "title" : "id",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del usuario",
+                            "location" : "path"
+                        }
+                    }
+                },
+                "getPoints" : {
+                    "name" : "get user's points",
+                    "path" : "/users/{id}/points/",
+                    "httpMethod" : "GET",
+                    "description" : "Permite obtener los puntos comprometidos y cumplidos de un usuario",
+                    "parameters" : {
+                        "Authorization": {
+                            "required": "Y",
+                            "default": "Bearer ",
+                            "type": "string",
+                            "description": "Token que debe ir en los headers el formato es 'Bearer [token sin los corchetes]' ",
+                            "location": "header"
+                        },
+                        "id" : {
+                            "title" : "id",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del usuario",
+                            "location" : "path"
+                        }
+                    }
+                }
+            }
+        },
+        "Users :: Commitments" : {
+            "methods": {
+                "listUserCommitments" : {
+                    "name" : "list user commitments",
+                    "path" : "/users/{id}/commitments/",
+                    "httpMethod" : "GET",
+                    "description" : "Permite listar los compromisos de un usuario",
+                    "parameters" : {
+                        "Authorization": {
+                            "required": "Y",
+                            "default": "Bearer ",
+                            "type": "string",
+                            "description": "Token que debe ir en los headers el formato es 'Bearer [token sin los corchetes]' ",
+                            "location": "header"
+                        },
+                        "id" : {
+                            "title" : "id",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del usuario",
+                            "location" : "path"
+                        },
+                        "pending_photos" : {
+                            "title" : "pending_photos",
+                            "required" : "N",
+                            "default" : "false",
+                            "type" : "boolean",
+                            "description" : "obtiene solo los compromisos pendientes de fotos",
+                            "location" : "path"
+                        },
+                        "categoryId" : {
+                            "title" : "categoryId",
+                            "required" : "N",
+                            "default" : "",
+                            "type" : "string",
+                            "description" : "filtra los compromisos por categoría",
+                            "location" : "path"
+                        }
+                    }
+                },
+                "commit" : {
+                    "name" : "make a new commitment",
+                    "path" : "/users/{id}/commitments/{commitmentId}/commit",
+                    "httpMethod" : "POST",
+                    "description" : "Crea un nuevo compromiso de usuario",
+                    "parameters" : {
+                        "Authorization": {
+                            "required": "Y",
+                            "default": "Bearer ",
+                            "type": "string",
+                            "description": "Token que debe ir en los headers el formato es 'Bearer [token sin los corchetes]' ",
+                            "location": "header"
+                        },
+                        "id" : {
+                            "title" : "id",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del usuario",
+                            "location" : "path"
+                        },
+                        "commitmentId" : {
+                            "title" : "commitmentId",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del compromiso",
+                            "location" : "path"
+                        }
+                    }
+                }
+            }
+        },
+        "Users :: Commitments :: Photos" : {
+            "methods": {
+                "listUserCommitmentPhotos" : {
+                    "name" : "list user commitment photos by commitment id",
+                    "path" : "/users/{id}/commitments/{commitmentId}/photos",
+                    "httpMethod" : "GET",
+                    "description" : "Obtiene las fotos subidas por compromiso de un usuario",
+                    "parameters" : {
+                        "Authorization": {
+                            "required": "Y",
+                            "default": "Bearer ",
+                            "type": "string",
+                            "description": "Token que debe ir en los headers el formato es 'Bearer [token sin los corchetes]' ",
+                            "location": "header"
+                        },
+                        "id" : {
+                            "title" : "id",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del usuario",
+                            "location" : "path"
+                        },
+                        "commitmentId" : {
+                            "title" : "commitmentId",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del compromiso",
+                            "location" : "path"
+                        }
+                    }
+                },
+                "addUserCommitmentPhoto" : {
+                    "name" : "add user commitment photo",
+                    "path" : "/users/{id}/commitments/{commitmentId}/photos",
+                    "httpMethod" : "POST",
+                    "description" : "Agrega una nueva foto respecto a un compromiso realizado por el usuario. OJO : solo guarda el nombre de la foto (generado por get_photo_name) , la subida debe realizarle en el cliente directamente a SOFTLAYER",
+                    "parameters" : {
+                        "Authorization": {
+                            "required": "Y",
+                            "default": "Bearer ",
+                            "type": "string",
+                            "description": "Token que debe ir en los headers el formato es 'Bearer [token sin los corchetes]' ",
+                            "location": "header"
+                        },
+                        "id" : {
+                            "title" : "id",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del usuario",
+                            "location" : "path"
+                        },
+                        "commitmentId" : {
+                            "title" : "commitmentId",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del compromiso",
+                            "location" : "path"
+                        },
+                        "photo" : {
+                            "type" : "object",
+                            "description" : "Un objeto representando datos de la foto",
+                            "location" : "body",
+                            "properties" : {
+                                "name" : {
+                                    "title": "name",
+                                    "required":true,
+                                    "type":"string",
+                                    "description": "Nombre de la foto",
+                                    "default": "123456789"
+                                },
+                                "extension" : {
+                                    "title": "extension",
+                                    "required":true,
+                                    "type":"string",
+                                    "description": "La extensión de la foto",
+                                    "default": "png"
+                                }
+                            }    
+                        }
+                    }
+                },
+                "countUserCommitmentPhotos" : {
+                    "name" : "count user commitment photos",
+                    "path" : "/users/{id}/commitments/{commitmentId}/photos/count",
+                    "httpMethod" : "GET",
+                    "description" : "Obtiene el total de fotos respecto a un compromiso realizado por el usuario",
+                    "parameters" : {
+                        "Authorization": {
+                            "required": "Y",
+                            "default": "Bearer ",
+                            "type": "string",
+                            "description": "Token que debe ir en los headers el formato es 'Bearer [token sin los corchetes]' ",
+                            "location": "header"
+                        },
+                        "id" : {
+                            "title" : "id",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del usuario",
+                            "location" : "path"
+                        },
+                        "commitmentId" : {
+                            "title" : "commitmentId",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del compromiso",
+                            "location" : "path"
+                        }
+                    }
+                },
+                "readUserCommitmentPhotos" : {
+                    "name" : "read user commitment photo",
+                    "path" : "/users/{id}/commitments/{commitmentId}/photos/{photoId}",
+                    "httpMethod" : "GET",
+                    "description" : "Obtiene una foto respecto a un compromiso realizado por el usuario",
+                    "parameters" : {
+                        "Authorization": {
+                            "required": "Y",
+                            "default": "Bearer ",
+                            "type": "string",
+                            "description": "Token que debe ir en los headers el formato es 'Bearer [token sin los corchetes]' ",
+                            "location": "header"
+                        },
+                        "id" : {
+                            "title" : "id",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del usuario",
+                            "location" : "path"
+                        },
+                        "commitmentId" : {
+                            "title" : "commitmentId",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del compromiso",
+                            "location" : "path"
+                        },
+                        "photoId" : {
+                            "title" : "photoId",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id de la foto",
+                            "location" : "path"
+                        }
+                    }
+                },
+                "likeUserCommitmentPhoto" : {
+                    "name" : "like an user commitment photo",
+                    "path" : "/users/{id}/commitments/{commitmentId}/photos/{photoId}/like",
+                    "httpMethod" : "POST",
+                    "description" : "Aumenta en 1 los likes de una foto respecto al compromiso realizado por algún usuario",
+                    "parameters" : {
+                        "Authorization": {
+                            "required": "Y",
+                            "default": "Bearer ",
+                            "type": "string",
+                            "description": "Token que debe ir en los headers el formato es 'Bearer [token sin los corchetes]' ",
+                            "location": "header"
+                        },
+                        "id" : {
+                            "title" : "id",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del usuario",
+                            "location" : "path"
+                        },
+                        "commitmentId" : {
+                            "title" : "commitmentId",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del compromiso",
+                            "location" : "path"
+                        },
+                        "photoId" : {
+                            "title" : "photoId",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id de la foto",
+                            "location" : "path"
+                        }
+                    }
+                },
+                "unlikeUserCommitmentPhoto" : {
+                    "name" : "unlike an user commitment photo",
+                    "path" : "/users/{id}/commitments/{commitmentId}/photos/{photoId}/unlike",
+                    "httpMethod" : "POST",
+                    "description" : "Reduce en 1 los likes de una foto respecto al compromiso realizado por algún usuario",
+                    "parameters" : {
+                        "Authorization": {
+                            "required": "Y",
+                            "default": "Bearer ",
+                            "type": "string",
+                            "description": "Token que debe ir en los headers el formato es 'Bearer [token sin los corchetes]' ",
+                            "location": "header"
+                        },
+                        "id" : {
+                            "title" : "id",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del usuario",
+                            "location" : "path"
+                        },
+                        "commitmentId" : {
+                            "title" : "commitmentId",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id del compromiso",
+                            "location" : "path"
+                        },
+                        "photoId" : {
+                            "title" : "photoId",
+                            "required" : "Y",
+                            "default" : "1",
+                            "type" : "integer",
+                            "description" : "el id de la foto",
+                            "location" : "path"
+                        }
+                    }
+                }
+            }
+        },
+        "Countries" : {
+            "methods": {
+                "listCountries" : {
+                    "name" : "list countries",
+                    "path" : "/countries/",
+                    "httpMethod" : "GET",
+                    "description" : "Obtiene la lista de países"
+                }
+            }
+        },
+        "States" : {
+            "methods": {
+                "listStates" : {
+                    "name" : "list states",
+                    "path" : "/states/",
+                    "httpMethod" : "GET",
+                    "description" : "Obtiene la lista de departamentos (SOLO PARA PERÚ)"
+                }
+            }
+        },
+        "Utils" : {
+            "methods" : {
+                "get_photo_name" : {
+                    "name" : "get photo name",
+                    "path" : "/utils/get_photo_name",
+                    "httpMethod" : "GET",
+                    "description" : "Permite generar un nombre para una nueva foto a subir, además incluye el token respectivo para poder subir la imagen que llevará el nombre devuelo a SOFTLAYER",
+                    "parameters" : {
+                        "Authorization": {
+                            "required": "Y",
+                            "default": "Bearer ",
+                            "type": "string",
+                            "description": "Token que debe ir en los headers el formato es 'Bearer [token sin los corchetes]' ",
+                            "location": "header"
+                        }
+                    }
+                }
+            }    
+        }
+    }
+}

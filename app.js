@@ -645,6 +645,8 @@ function processRequest(req, res, next) {
     var baseHostUrl = baseHostInfo[1].split('//')[1],
         baseHostPort = (baseHostInfo.length > 2) ? baseHostInfo[2] : "";
 
+    console.log(baseHostInfo, baseHostUrl, baseHostPort);
+
     var headers = {};
     for (var configHeader in apiConfig.headers) {
         if (apiConfig.headers.hasOwnProperty(configHeader)) {
@@ -1139,9 +1141,24 @@ function dynamicHelpers(req, res, next) {
 // Routes
 //
 app.get('/', function(req, res) {
-    res.render('listAPIs', {
-        title: config.title
-    });
+    req.params.api="pdtp";
+
+    if (req.params.api) {
+        res.locals.apiInfo = JSON.parse(JSON.minify(fs.readFileSync(path.join(config.apiConfigDir, req.params.api + '.json'), 'utf8')));
+        res.locals.apiName = req.params.api;
+
+        // If the cookie says we're authed for this particular API, set the session to authed as well
+        if (req.session[req.params.api] && req.session[req.params.api]['authed']) {
+            req.session['authed'] = true;
+        }
+    } else {
+        res.locals.apiInfo = apisConfig;
+    }
+
+    res.locals.session = req.session;
+    
+    req.params.api=req.params.api.replace(/\/$/,'');
+    res.render('api');
 });
 
 // Process the API request
@@ -1197,7 +1214,7 @@ if (!module.parent) {
           runServer(app, args);
         });
     } else {
-        var args = [process.env.PORT || config.port, config.address];
+        var args = [process.env.VCAP_APP_PORT || config.port, process.env.VCAP_APP_HOST || config.address];
         console.log("Express server starting on %s:%d", args[1], args[0]);
         runServer(app, args);
     }
